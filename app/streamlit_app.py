@@ -1,6 +1,6 @@
 """
 Multimodal Financial Fraud & Identity Spoofing Investigation Copilot Dashboard.
-Built with Streamlit, Plotly, PyTorch GNN, and Computer Vision.
+Redesigned with Modern FinTech Risk & Trust Console UI/UX (Option 1: Stripe Radar / Unit21 Clean Light).
 """
 
 import sys
@@ -25,34 +25,141 @@ from src.copilot_engine import FraudCopilotEngine
 
 # Page configuration
 st.set_page_config(
-    page_title="Multimodal Fraud & Forensic Copilot",
+    page_title="ApexRisk // Fraud & Forensic Copilot",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling
+# Option 1: Modern FinTech Risk & Trust Console (Clean Light Theme)
 st.markdown("""
 <style>
-    .metric-container {
-        border: 1px solid #334155;
-        border-radius: 8px;
-        padding: 14px;
-        background-color: #0f172a;
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    
+    html, body, [class*="css"] {
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
+    
+    /* Main App Light Background */
+    .stApp {
+        background-color: #F8FAFC;
+        color: #0F172A;
+    }
+    
+    /* Global Card Container */
+    .fintech-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+        margin-bottom: 16px;
+    }
+    
+    /* Header Top Bar */
+    .top-banner {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 16px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    
+    /* Badges */
     .badge-critical {
-        background-color: #ef4444;
-        color: white;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-weight: bold;
+        background-color: #FEE2E2;
+        color: #991B1B;
+        border: 1px solid #FCA5A5;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
-    .badge-safe {
-        background-color: #10b981;
-        color: white;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-weight: bold;
+    
+    .badge-elevated {
+        background-color: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FCD34D;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .badge-normal {
+        background-color: #DCFCE7;
+        color: #166534;
+        border: 1px solid #86EFAC;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .meta-mono {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        color: #475569;
+    }
+    
+    /* Clean Tab Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background-color: #F1F5F9;
+        padding: 4px;
+        border-radius: 10px;
+        border: 1px solid #E2E8F0;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        font-size: 14px;
+        font-weight: 600;
+        color: #64748B;
+        border-radius: 8px;
+        padding: 8px 16px;
+        background: transparent;
+        border: none;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    
+    /* Clean Metric Box */
+    [data-testid="stMetric"] {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        padding: 16px;
+        border-radius: 10px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    
+    [data-testid="stMetricLabel"] {
+        color: #64748B !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    [data-testid="stMetricValue"] {
+        color: #0F172A !important;
+        font-weight: 800 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -83,8 +190,8 @@ def initialize_engines():
     return graph_engine, doc_analyzer, copilot
 
 
-def render_network_graph(subgraph_data: dict, target_user: str):
-    """Renders an interactive 2D network subgraph with Plotly."""
+def render_light_network_graph(subgraph_data: dict, target_user: str):
+    """Renders a clean, light-mode interactive network graph for FinTech consoles."""
     nodes = subgraph_data["nodes"]
     edges = subgraph_data["edges"]
     
@@ -97,36 +204,48 @@ def render_network_graph(subgraph_data: dict, target_user: str):
         
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
-        line=dict(width=1, color="#64748b"),
+        line=dict(width=1.2, color="#CBD5E1"),
         hoverinfo="none",
         mode="lines"
     )
     
-    # 2. Node traces by type
+    # 2. Node traces
     node_x = [n["x"] for n in nodes]
     node_y = [n["y"] for n in nodes]
     node_colors = []
     node_sizes = []
+    node_borders = []
     node_texts = []
     
     for n in nodes:
         ntype = n["type"]
         if n["is_target"]:
-            node_colors.append("#ef4444")  # Red for target
-            node_sizes.append(24)
+            node_colors.append("#EF4444")  # Vivid red target
+            node_sizes.append(26)
+            node_borders.append("#991B1B")
         elif ntype == "device":
-            node_colors.append("#3b82f6")  # Blue for device
-            node_sizes.append(18)
+            node_colors.append("#3B82F6")  # Crisp Blue device
+            node_sizes.append(20)
+            node_borders.append("#1D4ED8")
         elif ntype == "ip":
-            node_colors.append("#a855f7")  # Purple for IP
-            node_sizes.append(14)
+            node_colors.append("#8B5CF6")  # Purple IP
+            node_sizes.append(15)
+            node_borders.append("#6D28D9")
         else:
-            # User node colored by fraud risk
             risk = n.get("fraud_risk", 0.0)
-            node_colors.append(f"rgba({int(risk*255)}, {int((1-risk)*200)}, 50, 0.9)")
-            node_sizes.append(16)
+            if risk > 0.6:
+                node_colors.append("#F87171")
+                node_borders.append("#DC2626")
+            else:
+                node_colors.append("#10B981")
+                node_borders.append("#059669")
+            node_sizes.append(18)
             
-        node_texts.append(f"<b>{n['id']}</b><br>Type: {ntype}<br>GNN Risk: {n.get('fraud_risk', 0.0)*100:.1f}%")
+        node_texts.append(
+            f"<b>{n['id']}</b><br>"
+            f"Entity Type: <b>{ntype.upper()}</b><br>"
+            f"GNN Anomaly Risk: <b>{n.get('fraud_risk', 0.0)*100:.1f}%</b>"
+        )
 
     node_trace = go.Scatter(
         x=node_x, y=node_y,
@@ -135,10 +254,11 @@ def render_network_graph(subgraph_data: dict, target_user: str):
         text=[n["label"] if n["is_target"] or n["type"] == "device" else "" for n in nodes],
         textposition="top center",
         hovertext=node_texts,
+        textfont=dict(family="Plus Jakarta Sans", size=11, color="#334155"),
         marker=dict(
             color=node_colors,
             size=node_sizes,
-            line=dict(width=1.5, color="#ffffff")
+            line=dict(width=2, color=node_borders)
         )
     )
 
@@ -146,153 +266,200 @@ def render_network_graph(subgraph_data: dict, target_user: str):
                     layout=go.Layout(
                         showlegend=False,
                         hovermode="closest",
-                        margin=dict(b=0, l=0, r=0, t=0),
+                        margin=dict(b=10, l=10, r=10, t=10),
                         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                         height=420,
-                        plot_bgcolor="#0b0f19",
-                        paper_bgcolor="#0b0f19"
+                        plot_bgcolor="#FFFFFF",
+                        paper_bgcolor="#FFFFFF"
                     ))
     return fig
 
 
 def main():
-    st.sidebar.title("🛡️ Multimodal Fraud Copilot")
-    st.sidebar.markdown("**Graph Neural Network & Forensic Vision Engine**")
+    # Sidebar
+    st.sidebar.markdown("### 🛡️ **ApexRisk Console**")
+    st.sidebar.caption("Enterprise Fraud & Forensics Engine")
     st.sidebar.markdown("---")
     
     df = load_or_create_dataset()
     graph_engine, doc_analyzer, copilot = initialize_engines()
     
-    # Sidebar Filters
-    fraud_only = st.sidebar.checkbox("Filter to High-Risk Flagged Transactions", value=True)
+    # Filter selection
+    st.sidebar.markdown("**Case Queue Filter**")
+    fraud_only = st.sidebar.toggle("Show High-Risk Flagged Transactions Only", value=True)
     if fraud_only:
         filtered_df = df[df["is_fraud"] == 1]
     else:
         filtered_df = df
         
     selected_tx_id = st.sidebar.selectbox(
-        "Select Transaction for Forensic Case Audit:",
+        "Select Transaction Case ID:",
         options=filtered_df["transaction_id"].tolist()
     )
     
     tx_row = df[df["transaction_id"] == selected_tx_id].iloc[0].to_dict()
     
-    # App Tabs
-    tab_case, tab_graph, tab_docs, tab_analytics = st.tabs([
-        "🔍 Forensic Case Dossier",
-        "🕸️ Transaction Graph & GNN",
-        "📄 Document Forensic Vision",
-        "📊 Network Macro Analytics"
+    # Attached document resolution
+    doc_dir = PROJECT_ROOT / "data" / "sample_documents"
+    if tx_row["is_fraud"] == 1:
+        doc_file = doc_dir / "invoice_tampered_forgery.png"
+    else:
+        doc_file = doc_dir / "invoice_legitimate_clean.png"
+        
+    case_result = copilot.evaluate_case(tx_row, str(doc_file))
+    risk_pct = case_result["composite_risk_score"] * 100
+    
+    if risk_pct > 65:
+        badge_html = f'<span class="badge-critical">● CRITICAL RISK ({risk_pct:.1f}%)</span>'
+    elif risk_pct > 35:
+        badge_html = f'<span class="badge-elevated">▲ ELEVATED RISK ({risk_pct:.1f}%)</span>'
+    else:
+        badge_html = f'<span class="badge-normal">✓ LOW RISK ({risk_pct:.1f}%)</span>'
+
+    # Top Brand Ribbon
+    st.markdown(f"""
+    <div class="top-banner">
+        <div>
+            <h2 style="margin:0; font-size: 22px; font-weight: 800; color: #0F172A;">
+                Case Audit: <span style="font-family:'JetBrains Mono'; color:#2563EB;">{tx_row['transaction_id']}</span>
+            </h2>
+            <div style="margin-top: 4px; font-size: 13px; color: #64748B;">
+                Timestamp: <b>{tx_row['timestamp']}</b> &nbsp;|&nbsp; Category: <b>{tx_row['merchant_category'].replace('_', ' ').title()}</b>
+            </div>
+        </div>
+        <div>
+            {badge_html}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # 4 Top KPI Cards
+    col_kpi1, col_kpi2, col_kpi3, col_kpi4 = st.columns(4)
+    col_kpi1.metric("Transaction Volume", f"${tx_row['amount']:,.2f}")
+    col_kpi2.metric("Sender Account", tx_row["sender_id"])
+    col_kpi3.metric("Counterparty", tx_row["receiver_id"])
+    col_kpi4.metric("Shared Device Accounts", f"{case_result['shared_device_accounts']} linked")
+    
+    st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+
+    # Main Tabs
+    tab_dossier, tab_graph, tab_docs, tab_analytics = st.tabs([
+        "📋 Forensic Case Dossier",
+        "🕸️ 2-Hop Network Graph & GNN",
+        "🔍 Document Forensic & ELA Viewer",
+        "📊 Portfolio Risk Analytics"
     ])
 
     # ==========================================
     # TAB 1: FORENSIC CASE DOSSIER
     # ==========================================
-    with tab_case:
-        st.subheader(f"Case Audit: Transaction `{tx_row['transaction_id']}`")
+    with tab_dossier:
+        col_left, col_right = st.columns([3, 2])
         
-        # Determine attached document
-        doc_dir = PROJECT_ROOT / "data" / "sample_documents"
-        if tx_row["is_fraud"] == 1:
-            doc_file = doc_dir / "invoice_tampered_forgery.png"
-        else:
-            doc_file = doc_dir / "invoice_legitimate_clean.png"
-            
-        case_result = copilot.evaluate_case(tx_row, str(doc_file))
-        
-        # Top KPI Banner
-        c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Transaction Amount", f"${tx_row['amount']:,.2f}")
-        c2.metric("Sender Account", tx_row["sender_id"])
-        c3.metric("Counterparty", tx_row["receiver_id"])
-        c4.metric("Shared Device Accounts", f"{case_result['shared_device_accounts']} linked")
-        
-        st.markdown("---")
-        
-        col_dos_l, col_dos_r = st.columns([3, 2])
-        
-        with col_dos_l:
+        with col_left:
+            st.markdown("### AI Copilot Risk Dossier")
             st.markdown(case_result["dossier_markdown"], unsafe_allow_html=True)
             
-            st.markdown("#### Quick Enforcement Action")
-            act_col1, act_col2, act_col3 = st.columns(3)
-            with act_col1:
+            st.markdown("---")
+            st.markdown("### Quick Enforcement Actions")
+            act1, act2, act3 = st.columns(3)
+            with act1:
                 if st.button("🚨 Freeze Sender Account", type="primary", use_container_width=True):
-                    st.error(f"Account {tx_row['sender_id']} has been locked. Audit ticket submitted.")
-            with act_col2:
-                if st.button("⚠️ Request Identity Verification", use_container_width=True):
-                    st.warning(f"KYC Challenge dispatched to {tx_row['sender_id']}.")
-            with act_col3:
+                    st.error(f"Account {tx_row['sender_id']} locked. Automated SAR filed with FinCEN.")
+            with act2:
+                if st.button("⚠️ Request Enhanced KYC", use_container_width=True):
+                    st.warning(f"KYC Challenge triggered for {tx_row['sender_id']}.")
+            with act3:
                 if st.button("✅ Clear False Positive", use_container_width=True):
-                    st.success(f"Transaction {tx_row['transaction_id']} cleared.")
+                    st.success(f"Case {tx_row['transaction_id']} marked as verified legitimate.")
 
-        with col_dos_r:
-            st.markdown("#### Risk Signal Breakdown")
+        with col_right:
+            st.markdown("### Multimodal Risk Decomposition")
             risk_breakdown = pd.DataFrame([
                 {"Signal": "Graph Topology (GNN)", "Risk Weight": case_result["gnn_structural_score"] * 100},
-                {"Signal": "Document Tampering (Vision)", "Risk Weight": (case_result["doc_analysis"]["tamper_confidence"] if case_result["doc_analysis"] else 0.1) * 100},
+                {"Signal": "Document Splicing (Vision ELA)", "Risk Weight": (case_result["doc_analysis"]["tamper_confidence"] if case_result["doc_analysis"] else 0.1) * 100},
                 {"Signal": "Structuring Velocity", "Risk Weight": min(100.0, (tx_row["amount"] / 10000.0) * 100)}
             ])
             fig_bar = go.Figure(go.Bar(
                 x=risk_breakdown["Risk Weight"],
                 y=risk_breakdown["Signal"],
                 orientation="h",
-                marker_color=["#3b82f6", "#ef4444", "#f59e0b"]
+                marker=dict(
+                    color=["#2563EB", "#EF4444", "#F59E0B"],
+                    line=dict(width=0)
+                )
             ))
-            fig_bar.update_layout(xaxis_title="Risk Contribution (%)", height=280, margin=dict(l=10, r=10, t=10, b=10))
+            fig_bar.update_layout(
+                xaxis=dict(title="Risk Contribution Score (%)", range=[0, 100], gridcolor="#F1F5F9"),
+                yaxis=dict(autorange="reversed"),
+                height=260,
+                margin=dict(l=10, r=10, t=10, b=10),
+                plot_bgcolor="#FFFFFF",
+                paper_bgcolor="#FFFFFF"
+            )
             st.plotly_chart(fig_bar, use_container_width=True)
+            
+            st.markdown("### Device & IP Footprint")
+            st.markdown(f"""
+            - **Device ID:** `{tx_row['device_id']}`
+            - **Origin IP:** `{tx_row['ip_address']}`
+            - **Cluster Association:** {'🚨 Coordinated Syndicate Ring A' if 'FRAUD' in tx_row['device_id'] else 'Standard Solo Hardware'}
+            """)
 
     # ==========================================
-    # TAB 2: TRANSACTION GRAPH & GNN
+    # TAB 2: NETWORK GRAPH & GNN
     # ==========================================
     with tab_graph:
-        st.subheader("Interactive 2-Hop Ego Graph & Collusion Rings")
+        st.subheader("Heterogeneous 2-Hop Ego Graph")
         st.markdown(
-            "Visualizing the topological neighborhood of the target account: "
-            "**Red** = Target Account | **Blue** = Device ID | **Purple** = IP Subnet"
+            "Graph topology around the target account: "
+            "<span style='color:#EF4444; font-weight:700;'>● Target</span> | "
+            "<span style='color:#3B82F6; font-weight:700;'>● Device ID</span> | "
+            "<span style='color:#8B5CF6; font-weight:700;'>● IP Subnet</span> | "
+            "<span style='color:#10B981; font-weight:700;'>● Legitimate Accounts</span>",
+            unsafe_allow_html=True
         )
         
         target_node = f"user:{tx_row['sender_id']}"
         subgraph = graph_engine.get_ego_subgraph(target_node, radius=2)
         
         if subgraph["num_nodes"] > 0:
-            fig_graph = render_network_graph(subgraph, target_user=target_node)
+            fig_graph = render_light_network_graph(subgraph, target_user=target_node)
             st.plotly_chart(fig_graph, use_container_width=True)
             
             st.info(
-                f"**Topological Insights:** Node `{target_node}` connects with {subgraph['num_nodes']} neighboring entities. "
-                f"GNN structural anomaly score: `{graph_engine.gnn_scores.get(target_node, 0.0):.3f}`"
+                f"**Graph Analytics:** Node `{target_node}` links to **{subgraph['num_nodes']}** neighboring entities. "
+                f"Graph Neural Network anomaly score: **`{graph_engine.gnn_scores.get(target_node, 0.0):.3f}`**"
             )
         else:
             st.warning("No localized subgraph available for this entity.")
 
     # ==========================================
-    # TAB 3: DOCUMENT FORENSIC VISION
+    # TAB 3: DOCUMENT FORENSIC & ELA VIEWER
     # ==========================================
     with tab_docs:
-        st.subheader("Multimodal Invoice Inspection & Error Level Analysis (ELA)")
+        st.subheader("Supporting Invoice Inspection: Original vs. Error Level Analysis (ELA)")
         st.markdown(
-            "Combines **Computer Vision compression analysis (ELA)** with **OCR/Layout parsing** to detect digitally spliced numbers and forged totals."
+            "Combines **Computer Vision compression analysis (ELA)** with **OCR mathematical reconciliation** to detect digitally spliced totals."
         )
         
         doc_c1, doc_c2 = st.columns(2)
-        
         with doc_c1:
-            st.markdown("#### Original Supporting Document")
+            st.markdown("#### 1. Uploaded Invoice Document")
             if doc_file.exists():
                 orig_img = Image.open(doc_file)
-                st.image(orig_img, caption=f"Document File: {doc_file.name}", use_container_width=True)
+                st.image(orig_img, caption=f"File: {doc_file.name}", use_container_width=True)
                 
         with doc_c2:
-            st.markdown("#### Computer Vision Error Level Analysis (ELA)")
+            st.markdown("#### 2. Computer Vision ELA Compression Residual")
             if doc_file.exists():
                 ela_img = doc_analyzer.compute_error_level_analysis(doc_file)
-                st.image(ela_img, caption="ELA Heatmap: Bright areas show compression discrepancies and digital tampering boundaries.", use_container_width=True)
+                st.image(ela_img, caption="ELA Heatmap: Bright regions indicate compression discontinuities and digital tampering boundaries.", use_container_width=True)
 
         if doc_file.exists():
             heuristics = doc_analyzer.analyze_document_heuristics(doc_file)
-            st.markdown("#### Forensic Inspection Results")
+            st.markdown("#### Forensic Inspection Checkpoints")
             for finding in heuristics["forensic_findings"]:
                 if heuristics["is_suspicious"]:
                     st.error(f"⚠️ {finding}")
@@ -300,22 +467,29 @@ def main():
                     st.success(f"✅ {finding}")
 
     # ==========================================
-    # TAB 4: NETWORK MACRO ANALYTICS
+    # TAB 4: PORTFOLIO RISK ANALYTICS
     # ==========================================
     with tab_analytics:
-        st.subheader("Global Transaction Risk & Ring Detection Summary")
+        st.subheader("Global Portfolio Fraud Distribution & Merchant Risk")
         
-        c_m1, c_m2, c_m3 = st.columns(3)
-        c_m1.metric("Total Transactions Monitored", f"{len(df):,}")
-        c_m2.metric("Flagged Fraud Ring Transactions", f"{df['is_fraud'].sum():,}")
-        c_m3.metric("Syndicate Detection Rate", f"{df['is_fraud'].mean()*100:.1f}%")
+        m_c1, m_c2, m_c3 = st.columns(3)
+        m_c1.metric("Total Monitored Transactions", f"{len(df):,}")
+        m_c2.metric("Flagged Syndicate Transactions", f"{df['is_fraud'].sum():,}")
+        m_c3.metric("Global Fraud Exposure Rate", f"{df['is_fraud'].mean()*100:.1f}%")
         
-        st.markdown("#### Transaction Distribution by Merchant Category")
         cat_counts = df.groupby(["merchant_category", "is_fraud"]).size().unstack(fill_value=0).reset_index()
         fig_cat = go.Figure()
-        fig_cat.add_trace(go.Bar(x=cat_counts["merchant_category"], y=cat_counts[0], name="Legitimate", marker_color="#10b981"))
-        fig_cat.add_trace(go.Bar(x=cat_counts["merchant_category"], y=cat_counts[1], name="Flagged Fraud", marker_color="#ef4444"))
-        fig_cat.update_layout(barmode="stack", height=380, xaxis_title="Merchant Category", yaxis_title="Number of Transactions")
+        fig_cat.add_trace(go.Bar(x=cat_counts["merchant_category"], y=cat_counts[0], name="Legitimate", marker_color="#10B981"))
+        fig_cat.add_trace(go.Bar(x=cat_counts["merchant_category"], y=cat_counts[1], name="Flagged Fraud", marker_color="#EF4444"))
+        fig_cat.update_layout(
+            barmode="stack",
+            height=360,
+            xaxis_title="Merchant Category",
+            yaxis_title="Transaction Count",
+            plot_bgcolor="#FFFFFF",
+            paper_bgcolor="#FFFFFF",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        )
         st.plotly_chart(fig_cat, use_container_width=True)
 
 
